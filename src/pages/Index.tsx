@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Briefcase, Shield } from "lucide-react";
+import { Users, Briefcase, Shield, Info } from "lucide-react";
+import { InteractiveFlowDiagram } from "@/components/InteractiveFlowDiagram";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Index = () => {
   return (
@@ -35,108 +37,22 @@ const Index = () => {
 
       {/* Flow Diagram Section */}
       <div className="container mx-auto px-6 py-16">
+        <Alert className="mb-6 border-primary/20 bg-primary/5">
+          <Info className="h-5 w-5 text-primary" />
+          <AlertDescription className="text-sm text-muted-foreground ml-2">
+            <strong className="text-foreground">Interactive Diagram:</strong> Hover over any step to see real-world scenarios, technical implementation details, and practical examples.
+          </AlertDescription>
+        </Alert>
+
         <Card className="shadow-soft overflow-hidden">
           <div className="p-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-6">
-              Platform Architecture & User Flows
+            <h2 className="text-2xl font-semibold text-foreground mb-2">
+              Interactive Platform Architecture
             </h2>
-            <div className="bg-muted/30 rounded-lg p-6 overflow-x-auto">
-              <div className="min-w-[800px]">
-                <svg viewBox="0 0 1200 800" className="w-full h-auto">
-                  {/* Client Flow */}
-                  <g>
-                    <rect x="50" y="50" width="200" height="60" rx="8" fill="#3b82f6" stroke="#2563eb" strokeWidth="2"/>
-                    <text x="150" y="85" textAnchor="middle" fill="white" fontSize="14">Client Registration</text>
-                    
-                    <rect x="50" y="140" width="200" height="60" rx="8" fill="#3b82f6" stroke="#2563eb" strokeWidth="2"/>
-                    <text x="150" y="175" textAnchor="middle" fill="white" fontSize="14">Client Dashboard</text>
-                    
-                    <rect x="50" y="230" width="200" height="60" rx="8" fill="#3b82f6" stroke="#2563eb" strokeWidth="2"/>
-                    <text x="150" y="265" textAnchor="middle" fill="white" fontSize="14">Contract Creation</text>
-                    
-                    <rect x="50" y="320" width="200" height="60" rx="8" fill="#3b82f6" stroke="#2563eb" strokeWidth="2"/>
-                    <text x="150" y="355" textAnchor="middle" fill="white" fontSize="14">Add Funds</text>
-                    
-                    {/* Client arrows */}
-                    <path d="M 150 110 L 150 140" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#arrowblue)" fill="none"/>
-                    <path d="M 150 200 L 150 230" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#arrowblue)" fill="none"/>
-                    <path d="M 150 290 L 150 320" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#arrowblue)" fill="none"/>
-                  </g>
-
-                  {/* Central System */}
-                  <g>
-                    <rect x="500" y="200" width="200" height="100" rx="8" fill="#f59e0b" stroke="#d97706" strokeWidth="3"/>
-                    <text x="600" y="245" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">POC Platform</text>
-                    <text x="600" y="265" textAnchor="middle" fill="white" fontSize="12">Central System</text>
-                    
-                    <ellipse cx="600" cy="380" rx="60" ry="40" fill="#6366f1" stroke="#4f46e5" strokeWidth="2"/>
-                    <text x="600" y="385" textAnchor="middle" fill="white" fontSize="12">Database</text>
-                  </g>
-
-                  {/* Contractor Flow */}
-                  <g>
-                    <rect x="950" y="50" width="200" height="60" rx="8" fill="#14b8a6" stroke="#0d9488" strokeWidth="2"/>
-                    <text x="1050" y="85" textAnchor="middle" fill="white" fontSize="14">Contractor KYC</text>
-                    
-                    <rect x="950" y="140" width="200" height="60" rx="8" fill="#14b8a6" stroke="#0d9488" strokeWidth="2"/>
-                    <text x="1050" y="175" textAnchor="middle" fill="white" fontSize="14">Contractor Dashboard</text>
-                    
-                    <rect x="950" y="230" width="200" height="60" rx="8" fill="#14b8a6" stroke="#0d9488" strokeWidth="2"/>
-                    <text x="1050" y="265" textAnchor="middle" fill="white" fontSize="14">Incoming Contracts</text>
-                    
-                    <rect x="950" y="320" width="200" height="60" rx="8" fill="#14b8a6" stroke="#0d9488" strokeWidth="2"/>
-                    <text x="1050" y="355" textAnchor="middle" fill="white" fontSize="14">Receive Payments</text>
-                    
-                    {/* Contractor arrows */}
-                    <path d="M 1050 110 L 1050 140" stroke="#14b8a6" strokeWidth="2" markerEnd="url(#arrowteal)" fill="none"/>
-                    <path d="M 1050 200 L 1050 230" stroke="#14b8a6" strokeWidth="2" markerEnd="url(#arrowteal)" fill="none"/>
-                    <path d="M 1050 290 L 1050 320" stroke="#14b8a6" strokeWidth="2" markerEnd="url(#arrowteal)" fill="none"/>
-                  </g>
-
-                  {/* Admin Flow */}
-                  <g>
-                    <rect x="500" y="500" width="200" height="60" rx="8" fill="#a855f7" stroke="#9333ea" strokeWidth="2"/>
-                    <text x="600" y="535" textAnchor="middle" fill="white" fontSize="14">Admin Dashboard</text>
-                    
-                    <rect x="300" y="600" width="180" height="50" rx="8" fill="#a855f7" stroke="#9333ea" strokeWidth="2"/>
-                    <text x="390" y="630" textAnchor="middle" fill="white" fontSize="12">Monitor Users</text>
-                    
-                    <rect x="510" y="600" width="180" height="50" rx="8" fill="#a855f7" stroke="#9333ea" strokeWidth="2"/>
-                    <text x="600" y="630" textAnchor="middle" fill="white" fontSize="12">View Contracts</text>
-                    
-                    <rect x="720" y="600" width="180" height="50" rx="8" fill="#a855f7" stroke="#9333ea" strokeWidth="2"/>
-                    <text x="810" y="630" textAnchor="middle" fill="white" fontSize="12">Payment Logs</text>
-                    
-                    {/* Admin arrows */}
-                    <path d="M 550 560 L 400 600" stroke="#a855f7" strokeWidth="2" markerEnd="url(#arrowpurple)" fill="none"/>
-                    <path d="M 600 560 L 600 600" stroke="#a855f7" strokeWidth="2" markerEnd="url(#arrowpurple)" fill="none"/>
-                    <path d="M 650 560 L 800 600" stroke="#a855f7" strokeWidth="2" markerEnd="url(#arrowpurple)" fill="none"/>
-                  </g>
-
-                  {/* Connecting arrows */}
-                  <path d="M 250 350 L 500 250" stroke="#94a3b8" strokeWidth="3" markerEnd="url(#arrowgray)" fill="none"/>
-                  <path d="M 700 250 L 950 260" stroke="#94a3b8" strokeWidth="3" markerEnd="url(#arrowgray)" fill="none"/>
-                  <path d="M 600 300 L 600 420" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#arrowgray)" fill="none"/>
-                  <path d="M 600 420 L 600 500" stroke="#a855f7" strokeWidth="2" markerEnd="url(#arrowpurple)" fill="none"/>
-
-                  {/* Arrow markers */}
-                  <defs>
-                    <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                      <path d="M0,0 L0,6 L9,3 z" fill="#3b82f6" />
-                    </marker>
-                    <marker id="arrowteal" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                      <path d="M0,0 L0,6 L9,3 z" fill="#14b8a6" />
-                    </marker>
-                    <marker id="arrowpurple" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                      <path d="M0,0 L0,6 L9,3 z" fill="#a855f7" />
-                    </marker>
-                    <marker id="arrowgray" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
-                      <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8" />
-                    </marker>
-                  </defs>
-                </svg>
-              </div>
-            </div>
+            <p className="text-muted-foreground mb-6">
+              Complete end-to-end workflow with technical implementation details
+            </p>
+            <InteractiveFlowDiagram />
           </div>
         </Card>
 
