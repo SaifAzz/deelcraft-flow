@@ -1,3 +1,4 @@
+import * as React from "react";
 import { FlowNode } from "./FlowNode";
 import { ArrowRight, ArrowDown, Database, Activity, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
