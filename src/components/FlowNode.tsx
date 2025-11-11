@@ -1,10 +1,5 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 
 interface FlowNodeProps {
   title: string;
@@ -23,39 +18,44 @@ const colorClasses = {
 };
 
 export const FlowNode = ({ title, color, realWorld, underHood, example, className }: FlowNodeProps) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
   return (
-    <HoverCard openDelay={100}>
-      <HoverCardTrigger asChild>
-        <div
-          className={cn(
-            "px-4 py-3 rounded-lg text-white font-medium text-sm border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
-            colorClasses[color],
-            className
-          )}
-        >
-          {title}
+    <div className="relative">
+      <div
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+        className={cn(
+          "px-4 py-3 rounded-lg text-white font-medium text-sm border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
+          colorClasses[color],
+          className
+        )}
+      >
+        {title}
+      </div>
+      
+      {isOpen && (
+        <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-96 p-4 bg-card border border-border rounded-lg shadow-lg">
+          <div className="space-y-3">
+            <h4 className="font-semibold text-foreground text-base">{title}</h4>
+            
+            <div>
+              <p className="text-xs font-semibold text-primary mb-1">🌍 Real World:</p>
+              <p className="text-sm text-muted-foreground">{realWorld}</p>
+            </div>
+            
+            <div>
+              <p className="text-xs font-semibold text-secondary mb-1">⚙️ Under the Hood:</p>
+              <p className="text-sm text-muted-foreground">{underHood}</p>
+            </div>
+            
+            <div className="pt-2 border-t border-border">
+              <p className="text-xs font-semibold text-accent mb-1">💡 Example:</p>
+              <p className="text-sm text-muted-foreground italic">{example}</p>
+            </div>
+          </div>
         </div>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-96 p-4 bg-card border-border" side="top" align="center">
-        <div className="space-y-3">
-          <h4 className="font-semibold text-foreground text-base">{title}</h4>
-          
-          <div>
-            <p className="text-xs font-semibold text-primary mb-1">🌍 Real World:</p>
-            <p className="text-sm text-muted-foreground">{realWorld}</p>
-          </div>
-          
-          <div>
-            <p className="text-xs font-semibold text-secondary mb-1">⚙️ Under the Hood:</p>
-            <p className="text-sm text-muted-foreground">{underHood}</p>
-          </div>
-          
-          <div className="pt-2 border-t border-border">
-            <p className="text-xs font-semibold text-accent mb-1">💡 Example:</p>
-            <p className="text-sm text-muted-foreground italic">{example}</p>
-          </div>
-        </div>
-      </HoverCardContent>
-    </HoverCard>
+      )}
+    </div>
   );
 };
