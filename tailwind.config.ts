@@ -50,6 +50,8 @@ export default {
         client: "hsl(var(--client-accent))",
         contractor: "hsl(var(--contractor-accent))",
         admin: "hsl(var(--admin-accent))",
+        "backend-service": "hsl(var(--backend-service))",
+        database: "hsl(var(--database))",
       },
       backgroundImage: {
         "gradient-hero": "var(--gradient-hero)",

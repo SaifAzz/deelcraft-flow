@@ -41,6 +41,8 @@ All colors MUST be HSL.
     --client-accent: 210 85% 52%;
     --contractor-accent: 180 70% 45%;
     --admin-accent: 270 70% 60%;
+    --backend-service: 25 95% 53%;
+    --database: 220 10% 50%;
 
     --gradient-hero: linear-gradient(135deg, hsl(210 85% 52% / 0.1), hsl(180 70% 45% / 0.1));
     --shadow-soft: 0 4px 20px -2px hsl(220 15% 15% / 0.08);
@@ -78,6 +80,8 @@ All colors MUST be HSL.
     --client-accent: 210 85% 52%;
     --contractor-accent: 180 70% 45%;
     --admin-accent: 270 70% 60%;
+    --backend-service: 25 95% 53%;
+    --database: 220 10% 50%;
 
     --gradient-hero: linear-gradient(135deg, hsl(210 85% 52% / 0.15), hsl(180 70% 45% / 0.15));
     --shadow-soft: 0 4px 20px -2px hsl(0 0% 0% / 0.3);

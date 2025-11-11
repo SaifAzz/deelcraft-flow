@@ -3,10 +3,11 @@ import { cn } from "@/lib/utils";
 
 interface FlowNodeProps {
   title: string;
-  color: "client" | "contractor" | "admin" | "system";
+  color: "client" | "contractor" | "admin" | "system" | "backend" | "database" | "frontend";
   realWorld: string;
   underHood: string;
   example: string;
+  modularAdvantage?: string;
   className?: string;
 }
 
@@ -15,9 +16,12 @@ const colorClasses = {
   contractor: "bg-contractor hover:bg-contractor/90 border-contractor",
   admin: "bg-admin hover:bg-admin/90 border-admin",
   system: "bg-primary hover:bg-primary/90 border-primary",
+  backend: "bg-backend-service hover:bg-backend-service/90 border-backend-service",
+  database: "bg-database hover:bg-database/90 border-database",
+  frontend: "bg-secondary hover:bg-secondary/90 border-secondary",
 };
 
-export const FlowNode = ({ title, color, realWorld, underHood, example, className }: FlowNodeProps) => {
+export const FlowNode = ({ title, color, realWorld, underHood, example, modularAdvantage, className }: FlowNodeProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   return (
@@ -53,6 +57,13 @@ export const FlowNode = ({ title, color, realWorld, underHood, example, classNam
               <p className="text-xs font-semibold text-accent mb-1">💡 Example:</p>
               <p className="text-sm text-muted-foreground italic">{example}</p>
             </div>
+            
+            {modularAdvantage && (
+              <div className="pt-2 border-t border-border">
+                <p className="text-xs font-semibold text-backend-service mb-1">🔧 Modular Advantage:</p>
+                <p className="text-sm text-muted-foreground">{modularAdvantage}</p>
+              </div>
+            )}
           </div>
         </div>
       )}
