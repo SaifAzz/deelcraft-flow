@@ -1,6 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users, Briefcase, Shield, Target, TrendingUp, Calendar, CheckCircle2, AlertTriangle, DollarSign, Code, Database, Cloud, Zap, FileText, Presentation, ArrowRight, ArrowDown, Settings, Mail, CreditCard, Lock, FileCheck, Building2, UserCheck } from "lucide-react";
+import { Users, Briefcase, Shield, Target, TrendingUp, Calendar, CheckCircle2, AlertTriangle, DollarSign, Code, Database, Cloud, Zap, FileText, Presentation, ArrowRight, ArrowDown, Settings, Mail, CreditCard, Lock, FileCheck, Building2, UserCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,22 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from "@/components/ui/separator";
 
 const KickoffMeeting = () => {
-    const navigate = useNavigate();
 
     return (
         <div className="min-h-screen bg-background">
             {/* Header */}
             <div className="border-b bg-gradient-to-r from-primary/10 to-backend-service/10">
                 <div className="container mx-auto px-6 py-8">
-                    <Button
-                        variant="ghost"
-                        onClick={() => navigate("/")}
-                        className="mb-6"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Flow Diagram
-                    </Button>
-
                     <div className="text-center max-w-4xl mx-auto">
                         <div className="flex items-center justify-center gap-3 mb-4">
                             <Presentation className="w-8 h-8 text-primary" />

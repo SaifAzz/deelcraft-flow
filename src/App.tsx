@@ -3,11 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import NodeDetail from "./pages/NodeDetail";
-import BusinessFlow from "./pages/BusinessFlow";
-import TechnicalArchitecture from "./pages/TechnicalArchitecture";
 import KickoffMeeting from "./pages/KickoffMeeting";
 
 const queryClient = new QueryClient();
@@ -19,11 +15,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/node/:id" element={<NodeDetail />} />
-          <Route path="/business-flow" element={<BusinessFlow />} />
-          <Route path="/technical-architecture" element={<TechnicalArchitecture />} />
-          <Route path="/kickoff-meeting" element={<KickoffMeeting />} />
+          <Route path="/" element={<KickoffMeeting />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
