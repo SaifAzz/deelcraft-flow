@@ -1,7 +1,10 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
 
 interface FlowNodeProps {
+  id?: string;
   title: string;
   color: "client" | "contractor" | "admin" | "system" | "backend" | "database" | "frontend";
   realWorld: string;
@@ -21,21 +24,33 @@ const colorClasses = {
   frontend: "bg-secondary hover:bg-secondary/90 border-secondary",
 };
 
-export const FlowNode = ({ title, color, realWorld, underHood, example, modularAdvantage, className }: FlowNodeProps) => {
+export const FlowNode = ({ id, title, color, realWorld, underHood, example, modularAdvantage, className }: FlowNodeProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (id) {
+      navigate(`/node/${id}`);
+    }
+  };
 
   return (
     <div className="relative">
       <div
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => setIsOpen(false)}
+        onClick={handleClick}
         className={cn(
-          "px-4 py-3 rounded-lg text-white font-medium text-sm border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg",
+          "px-4 py-3 rounded-lg text-white font-medium text-sm border-2 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg relative group",
           colorClasses[color],
-          className
+          className,
+          id && "pr-8"
         )}
       >
         {title}
+        {id && (
+          <ExternalLink className="w-3 h-3 absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+        )}
       </div>
       
       {isOpen && (
@@ -62,6 +77,19 @@ export const FlowNode = ({ title, color, realWorld, underHood, example, modularA
               <div className="pt-2 border-t border-border">
                 <p className="text-xs font-semibold text-backend-service mb-1">🔧 Modular Advantage:</p>
                 <p className="text-sm text-muted-foreground">{modularAdvantage}</p>
+              </div>
+            )}
+            {id && (
+              <div className="pt-2 border-t border-border">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/node/${id}`);
+                  }}
+                  className="text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  View detailed page <ExternalLink className="w-3 h-3" />
+                </button>
               </div>
             )}
           </div>

@@ -1,3 +1,28 @@
+# Deel-like Platform Flow - POC Documentation
+
+## 📚 POC Documentation
+
+This repository contains comprehensive documentation for the Deel-like Platform POC, including detailed flows, technical architecture, and implementation approach.
+
+### Key Documents
+
+- **[Kickoff Presentation](KICKOFF_PRESENTATION.md)** - Complete professional presentation document for kickoff meeting
+- **[Kickoff Slides](KICKOFF_SLIDES.md)** - Slide-ready format for PowerPoint/Prezi conversion
+- **[Quick Reference](QUICK_REFERENCE.md)** - One-page overview for quick access
+- **[Detailed Flow & Technical Approach](POC_DETAILED_FLOW.md)** - Complete platform flow with all technical details
+- **[Meeting Agenda](MEETING_AGENDA.md)** - 2-hour meeting agenda with manager & CTO
+- **[Tools Comparison](TOOLS_COMPARISON.md)** - Detailed comparison of technology choices
+
+### Interactive Flow Diagram
+
+Run the development server to see the interactive platform flow diagram:
+```sh
+npm run dev
+```
+Then visit `http://localhost:8080` to explore the visual flow.
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info
