@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { Link } from "react-router-dom";
 
 const KickoffMeeting = () => {
 
@@ -17,6 +18,15 @@ const KickoffMeeting = () => {
                         <div className="flex items-center justify-center gap-3 mb-4">
                             <Presentation className="w-8 h-8 text-primary" />
                             <h1 className="text-4xl font-bold text-foreground">Mind-Links POC Kickoff</h1>
+                        </div>
+                        <div className="flex justify-center gap-4 mt-6">
+                            <Link to="/product-brief">
+                                <Button size="lg" variant="default" className="gap-2">
+                                    <FileText className="w-5 h-5" />
+                                    View Product Brief
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
