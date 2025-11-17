@@ -19,11 +19,25 @@ const KickoffMeeting = () => {
                             <Presentation className="w-8 h-8 text-primary" />
                             <h1 className="text-4xl font-bold text-foreground">Mind-Links POC Kickoff</h1>
                         </div>
-                        <div className="flex justify-center gap-4 mt-6">
+                        <div className="flex justify-center gap-4 mt-6 flex-wrap">
                             <Link to="/product-brief">
                                 <Button size="lg" variant="default" className="gap-2">
                                     <FileText className="w-5 h-5" />
                                     View Product Brief
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                            <Link to="/authentication-architecture">
+                                <Button size="lg" variant="outline" className="gap-2">
+                                    <Lock className="w-5 h-5" />
+                                    Auth Architecture
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                            <Link to="/auth-poc-approaches">
+                                <Button size="lg" variant="outline" className="gap-2 border-green-500 text-green-700 hover:bg-green-50">
+                                    <Zap className="w-5 h-5" />
+                                    Lambda vs ECS
                                     <ArrowRight className="w-4 h-4" />
                                 </Button>
                             </Link>

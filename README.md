@@ -12,14 +12,30 @@ This repository contains comprehensive documentation for the Deel-like Platform 
 - **[Detailed Flow & Technical Approach](POC_DETAILED_FLOW.md)** - Complete platform flow with all technical details
 - **[Meeting Agenda](MEETING_AGENDA.md)** - 2-hour meeting agenda with manager & CTO
 - **[Tools Comparison](TOOLS_COMPARISON.md)** - Detailed comparison of technology choices
+- **[Product Brief](PRODUCT_BRIEF.md)** - Comprehensive product documentation with features and architecture
+- **[Authentication Architecture](docs/authentication-flow.md)** - Complete auth service flow with AWS + Terraform + API Gateway
+- **[Architecture Review](docs/auth-architecture-review.md)** - Comprehensive technical review and recommendations (8.5/10 rating)
+- **[Lambda vs ECS Comparison](docs/LAMBDA_VS_ECS_COMPARISON.md)** - ⭐ **NEW!** Which to choose for fastest POC/MVP
+- **[Architecture Pages Summary](docs/ARCHITECTURE_PAGES_SUMMARY.md)** - 🎉 **NEW!** Overview of all 3 interactive architecture pages
+- **[Quick Start Guide](docs/QUICK_START_AUTH.md)** - 3-minute overview with implementation checklist
+- **[Implementation Summary](docs/IMPLEMENTATION_SUMMARY.md)** - What was built, features, and metrics
 
-### Interactive Flow Diagram
+### Interactive Visualizations
 
-Run the development server to see the interactive platform flow diagram:
+Run the development server to explore interactive diagrams:
 ```sh
 npm run dev
 ```
-Then visit `http://localhost:8080` to explore the visual flow.
+
+Then visit these pages:
+- `http://localhost:8080` - Main platform flow diagram
+- `http://localhost:8080/authentication-architecture` - Interactive auth flow with step-by-step examples
+- `http://localhost:8080/auth-poc-approaches` - ⭐ **NEW!** Lambda vs ECS comparison (interactive)
+- `http://localhost:8080/lambda-architecture` - 🚀 **NEW!** Complete Lambda serverless architecture with SAM
+- `http://localhost:8080/ecs-architecture` - 🐳 **NEW!** Complete ECS Fargate containerized architecture
+- `http://localhost:8080/product-brief` - Complete product documentation
+- `http://localhost:8080/compliance-flow` - Compliance feature details
+- `http://localhost:8080/payroll-flow` - Payroll system documentation
 
 ---
 
