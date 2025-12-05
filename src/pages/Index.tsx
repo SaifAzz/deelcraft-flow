@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Briefcase, Shield, Info, ArrowRight, Workflow, Layers, Presentation } from "lucide-react";
 import { InteractiveFlowDiagram } from "@/components/InteractiveFlowDiagram";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { MindLinksLogo } from "@/components/MindLinksLogo";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,6 +17,9 @@ const Index = () => {
       <div className="bg-gradient-hero border-b border-border">
         <div className="container mx-auto px-6 py-16">
           <div className="text-center max-w-4xl mx-auto">
+            <div className="flex justify-center mb-6">
+              <MindLinksLogo size="lg" />
+            </div>
             <h1 className="text-5xl font-bold text-foreground mb-4">
               Deel-like Platform Flow
             </h1>
@@ -60,6 +64,26 @@ const Index = () => {
             </p>
             <InteractiveFlowDiagram />
           </div>
+        </Card>
+
+        {/* Client Dashboard Link */}
+        <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200" onClick={() => navigate("/client-dashboard")}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-blue-500/10 rounded-lg">
+              <Users className="w-6 h-6 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold text-foreground">Client Dashboard Wireframes</h3>
+              <p className="text-sm text-muted-foreground">Interactive design mockups for all client flows</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <p className="text-muted-foreground text-sm mb-4">
+            Complete wireframe designs covering Dashboard Overview, Contractors Management, Contract Creation Wizard, Payroll Management, Payments & Escrow, Compliance Monitoring, and Settings.
+          </p>
+          <Button variant="outline" className="w-full">
+            View Client Dashboard Design
+          </Button>
         </Card>
 
         {/* Additional Flow Pages */}

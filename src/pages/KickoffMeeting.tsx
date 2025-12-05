@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Link } from "react-router-dom";
+import { MindLinksLogo } from "@/components/MindLinksLogo";
 
 const KickoffMeeting = () => {
 
@@ -17,13 +18,21 @@ const KickoffMeeting = () => {
                     <div className="text-center max-w-4xl mx-auto">
                         <div className="flex items-center justify-center gap-3 mb-4">
                             <Presentation className="w-8 h-8 text-primary" />
-                            <h1 className="text-4xl font-bold text-foreground">Mind-Links POC Kickoff</h1>
+                            <MindLinksLogo size="lg" />
+                            <h1 className="text-4xl font-bold text-foreground">POC Kickoff</h1>
                         </div>
                         <div className="flex justify-center gap-4 mt-6 flex-wrap">
                             <Link to="/product-brief">
                                 <Button size="lg" variant="default" className="gap-2">
                                     <FileText className="w-5 h-5" />
                                     View Product Brief
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                            <Link to="/full-system-architecture">
+                                <Button size="lg" variant="outline" className="gap-2 border-blue-500 text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950">
+                                    <Database className="w-5 h-5" />
+                                    Full System Architecture
                                     <ArrowRight className="w-4 h-4" />
                                 </Button>
                             </Link>

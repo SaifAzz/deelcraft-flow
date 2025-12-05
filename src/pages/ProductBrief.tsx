@@ -6,6 +6,7 @@ import { CheckCircle2, AlertTriangle, TrendingUp, Users, FileText, DollarSign, S
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
+import { MindLinksLogo } from "@/components/MindLinksLogo";
 
 const ProductBrief = () => {
   return (
@@ -22,8 +23,7 @@ const ProductBrief = () => {
             </Link>
           </div>
           <div className="flex items-center gap-3 mb-4">
-            <Globe className="h-10 w-10" />
-            <h1 className="text-5xl font-bold">Mind-Links</h1>
+            <MindLinksLogo size="lg" variant="light" />
           </div>
           <p className="text-2xl font-light mb-2">Product Brief</p>
           <p className="text-xl opacity-90 max-w-3xl">

@@ -8,35 +8,35 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 220 15% 15%;
+    --background: 0 0% 100%;
+    --foreground: 220 15% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card-foreground: 220 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
+    --popover-foreground: 220 15% 10%;
 
-    --primary: 210 85% 52%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 70% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 15% 10%;
 
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 270 70% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 220 15% 10%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 210 85% 52%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --client-accent: 210 85% 52%;
     --contractor-accent: 180 70% 45%;
@@ -45,6 +45,12 @@ All colors MUST be HSL.
     --database: 220 10% 50%;
 
     --gradient-hero: linear-gradient(135deg, hsl(210 85% 52% / 0.1), hsl(180 70% 45% / 0.1));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(210 85% 52%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 52%), hsl(180 70% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(270 70% 60%), hsl(217 91% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(160 84% 39%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 14% 98%));
+    --gradient-background: linear-gradient(135deg, hsl(220 14% 98%), hsl(210 40% 96%));
     --shadow-soft: 0 4px 20px -2px hsl(220 15% 15% / 0.08);
   }
 
@@ -58,24 +64,24 @@ All colors MUST be HSL.
     --popover: 220 18% 12%;
     --popover-foreground: 220 10% 95%;
 
-    --primary: 210 85% 52%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 70% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 220 10% 95%;
 
     --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 60%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 270 70% 60%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 220 15% 20%;
     --input: 220 15% 20%;
-    --ring: 210 85% 52%;
+    --ring: 217 91% 60%;
 
     --client-accent: 210 85% 52%;
     --contractor-accent: 180 70% 45%;
@@ -84,6 +90,12 @@ All colors MUST be HSL.
     --database: 220 10% 50%;
 
     --gradient-hero: linear-gradient(135deg, hsl(210 85% 52% / 0.15), hsl(180 70% 45% / 0.15));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(210 85% 52%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 85% 52%), hsl(180 70% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(270 70% 60%), hsl(217 91% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(160 84% 39%));
+    --gradient-card: linear-gradient(135deg, hsl(220 18% 12%), hsl(220 18% 15%));
+    --gradient-background: linear-gradient(135deg, hsl(220 20% 8%), hsl(220 20% 12%));
     --shadow-soft: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
   }
 }
@@ -95,5 +107,62 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  
+  /* Animated gradient text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 8s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  /* Smooth scroll */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Backdrop blur support */
+  .backdrop-blur-safari {
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Section highlight animation */
+  @keyframes section-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+    50% {
+      box-shadow: 0 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+  }
+  
+  .section-highlight {
+    animation: section-pulse 2s ease-out;
+  }
+  
+  /* Smooth scroll with offset */
+  html {
+    scroll-padding-top: 80px;
   }
 }
