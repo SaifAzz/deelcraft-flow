@@ -22,6 +22,11 @@ import EntityCreation from "./pages/EntityCreation";
 import EntityVerification from "./pages/EntityVerification";
 import MindLinksWebsite from "./pages/MindLinksWebsite";
 import OnboardingShowcasePage from "./pages/OnboardingShowcasePage";
+import BackendMicroservicesArchitecture from "./pages/BackendMicroservicesArchitecture";
+import WebsiteBackendArchitecture from "./pages/WebsiteBackendArchitecture";
+import ContractorDashboardBackend from "./pages/ContractorDashboardBackend";
+import ClientDashboardBackend from "./pages/ClientDashboardBackend";
+import AdminDashboardBackend from "./pages/AdminDashboardBackend";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +55,11 @@ const App = () => (
           <Route path="/contractor-dashboard" element={<ContractorDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin/client/:id" element={<ClientDetails />} />
+          <Route path="/backend-microservices-architecture" element={<BackendMicroservicesArchitecture />} />
+          <Route path="/website-backend-architecture" element={<WebsiteBackendArchitecture />} />
+          <Route path="/contractor-dashboard-backend" element={<ContractorDashboardBackend />} />
+          <Route path="/client-dashboard-backend" element={<ClientDashboardBackend />} />
+          <Route path="/admin-dashboard-backend" element={<AdminDashboardBackend />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
