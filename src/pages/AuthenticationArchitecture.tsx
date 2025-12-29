@@ -1,7 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 import { 
   Shield, 
   Database, 
@@ -18,9 +18,9 @@ import {
   Clock,
   Users
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import { AuthFlowVisualization } from "@/components/AuthFlowVisualization";
+import { Alert, AlertDescription, AlertTitle } from "@/shared/components/ui/alert";
+import { Separator } from "@/shared/components/ui/separator";
+import { AuthFlowVisualization } from "@/shared/components/AuthFlowVisualization";
 
 const AuthenticationArchitecture = () => {
   return (

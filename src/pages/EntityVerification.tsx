@@ -24,9 +24,9 @@ import {
   Folder,
   Plus,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import {
   Form,
   FormControl,
@@ -35,14 +35,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -50,14 +50,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
-import ClientDashboard from "./ClientDashboard";
+} from "@/shared/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
+import { Label } from "@/shared/components/ui/label";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { cn } from "@/shared/lib/utils";
+import { useToast } from "@/shared/hooks/use-toast";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
+import ClientDashboard from "../dashboards/client/pages/Dashboard";
 
 // Form validation schema
 const verificationSchema = z.object({

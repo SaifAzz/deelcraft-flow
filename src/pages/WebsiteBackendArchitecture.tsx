@@ -1915,3 +1915,7 @@ resource "aws_ecs_task_definition" "content_service" {
 export default WebsiteBackendArchitecture;
 
 
+
+
+
+

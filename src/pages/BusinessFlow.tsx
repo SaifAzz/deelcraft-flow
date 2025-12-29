@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ArrowDown, Users, Briefcase, Shield, CreditCard, FileText, CheckCircle2, Clock } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
 
 const BusinessFlow = () => {
   const navigate = useNavigate();

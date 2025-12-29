@@ -25,11 +25,11 @@ import {
   Play,
   Eye,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { cn } from "@/shared/lib/utils";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
 
 export const MindLinksWebsite: React.FC = () => {
   const navigate = useNavigate();

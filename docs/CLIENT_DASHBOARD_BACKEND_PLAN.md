@@ -630,6 +630,151 @@ PUT /api/clients/me/notifications/read-all
 
 ## DynamoDB Schemas
 
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    CLIENT_COMPANIES {
+        string id PK "UUID"
+        string userId FK "auth-users.id"
+        string legalName
+        string tradingName
+        string country
+        string taxId "Encrypted"
+        string registrationNumber
+        map address "street, city, state, postalCode, country"
+        string verificationStatus "pending|verified|rejected"
+        string businessType
+        string employeeCount
+        map businessRegistryData "From OpenCorporates"
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    CLIENT_DOCUMENTS {
+        string id PK "UUID"
+        string clientId FK "client-companies.id"
+        string type "business_license|tax_registration|incorporation"
+        string name "Original filename"
+        string s3Key
+        string s3Url
+        string status "pending|approved|rejected"
+        list requiredFor "Countries requiring this doc"
+        string uploadedAt "ISO 8601"
+        string reviewedAt "ISO 8601"
+        string reviewedBy "Admin user ID"
+        string createdAt "ISO 8601"
+    }
+
+    CLIENT_INVITATIONS {
+        string id PK "UUID"
+        string clientId FK "client-companies.id"
+        string email
+        string firstName
+        string lastName
+        string invitationToken UK
+        string status "pending|accepted|expired|cancelled"
+        string contractType "fixed|hourly|milestone"
+        string sentAt "ISO 8601"
+        string expiresAt "ISO 8601"
+        number ttl "Auto-delete after 30 days"
+        string createdAt "ISO 8601"
+    }
+
+    PAYMENT_ESCROW {
+        string id PK "UUID"
+        string clientId FK "client-companies.id"
+        number balance
+        number pendingPayments
+        number availableBalance
+        string currency
+        string lastFundedAt "ISO 8601"
+        string createdAt "ISO 8601"
+    }
+
+    PAYMENT_PAYROLL {
+        string id PK "UUID (PR-001)"
+        string clientId FK "client-companies.id"
+        string period "November 2024"
+        string startDate "ISO 8601"
+        string endDate "ISO 8601"
+        number contractorCount
+        number totalAmount
+        string currency
+        string status "draft|submitted|processing|processed|failed"
+        string createdAt "ISO 8601"
+        string processedAt "ISO 8601"
+    }
+
+    PAYMENT_PAYROLL_ITEMS {
+        string id PK "UUID"
+        string payrollId FK "payment-payroll.id"
+        string clientId FK "client-companies.id"
+        string contractorId FK "contractor-profiles.id"
+        string contractorName
+        string contractId FK "contract-contracts.id"
+        string contractType "Fixed|Hourly"
+        number amount
+        string currency
+        string details "Milestone 1, Milestone 2"
+        string status "pending|processing|paid|failed"
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACT_CONTRACTS {
+        string id PK "UUID (C-001)"
+        string clientId FK "client-companies.id"
+        string contractorId FK "contractor-profiles.id"
+        string contractorName
+        string type "fixed|hourly|milestone"
+        number amount
+        string currency
+        string status "draft|pending_signature|active|completed|terminated"
+        string startDate "ISO 8601"
+        string endDate "ISO 8601"
+        number progress "0-100"
+        string scopeOfWork
+        string pdfUrl
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACT_MILESTONES {
+        string id PK "UUID"
+        string contractId FK "contract-contracts.id"
+        string title
+        string description
+        number amount
+        string currency
+        string dueDate "ISO 8601"
+        string status "pending|submitted|approved|rejected|paid"
+        string approvedBy "Client user ID"
+        string createdAt "ISO 8601"
+    }
+
+    PAYMENT_TRANSACTIONS {
+        string id PK "UUID"
+        string clientId FK "client-companies.id"
+        string date "ISO 8601"
+        string type "payment|funding|refund"
+        string description
+        number amount
+        string currency
+        string status "pending|completed|failed"
+        string createdAt "ISO 8601"
+    }
+
+    CLIENT_COMPANIES ||--o{ CLIENT_DOCUMENTS : "uploads"
+    CLIENT_COMPANIES ||--o{ CLIENT_INVITATIONS : "sends"
+    CLIENT_COMPANIES ||--|| PAYMENT_ESCROW : "has"
+    CLIENT_COMPANIES ||--o{ PAYMENT_PAYROLL : "creates"
+    CLIENT_COMPANIES ||--o{ CONTRACT_CONTRACTS : "creates"
+    CLIENT_COMPANIES ||--o{ PAYMENT_TRANSACTIONS : "has"
+    PAYMENT_PAYROLL ||--o{ PAYMENT_PAYROLL_ITEMS : "contains"
+    CONTRACT_CONTRACTS ||--o{ CONTRACT_MILESTONES : "has"
+```
+
+---
+
 ### Tables for Client Dashboard
 
 | Table | Service | Purpose |

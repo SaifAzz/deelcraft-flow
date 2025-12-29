@@ -800,6 +800,140 @@ Response:
 
 ## DynamoDB Schemas
 
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    CONTRACTOR_PROFILES {
+        string id PK "UUID"
+        string userId FK "auth-users.id"
+        string email UK "Unique"
+        string firstName
+        string lastName
+        string phone
+        string country
+        string timezone
+        string profilePictureUrl
+        string status "active|inactive|suspended"
+        string onboardingStatus "pending|in_progress|completed"
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    CONTRACTOR_BANK_DETAILS {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string bankName
+        string accountNumber "Encrypted"
+        string routingNumber "Encrypted"
+        string swiftCode
+        string iban "Encrypted"
+        string accountHolderName
+        string currency
+        boolean isPrimary
+        string verificationStatus "pending|verified|failed"
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACTOR_TAX_INFO {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string taxIdNumber "Encrypted"
+        string taxResidenceCountry
+        string taxFormType "W9|W8BEN|Other"
+        string taxFormUrl
+        boolean isVerified
+        string expiresAt "ISO 8601"
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACTOR_WALLET {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        number availableBalance
+        number pendingBalance
+        number totalEarned
+        number totalWithdrawn
+        string currency
+        string lastTransactionAt "ISO 8601"
+        string createdAt "ISO 8601"
+    }
+
+    KYC_SESSIONS {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string veriffSessionId
+        string status "pending|approved|rejected|expired"
+        string verificationLevel "basic|standard|enhanced"
+        string submittedAt "ISO 8601"
+        string completedAt "ISO 8601"
+        map verificationResult
+        string createdAt "ISO 8601"
+    }
+
+    KYC_DOCUMENTS {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string sessionId FK "kyc-sessions.id"
+        string documentType "passport|national_id|proof_of_address"
+        string s3Key
+        string status "pending|approved|rejected"
+        string expiryDate
+        string reviewedBy "Admin ID"
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACT_TIMESHEETS {
+        string id PK "UUID"
+        string contractId FK "contract-contracts.id"
+        string contractorId FK "contractor-profiles.id"
+        string periodStart "ISO 8601"
+        string periodEnd "ISO 8601"
+        number hoursWorked
+        number hourlyRate
+        number totalAmount
+        string status "draft|submitted|approved|rejected|paid"
+        string approvedBy "Client ID"
+        string createdAt "ISO 8601"
+    }
+
+    PAYMENT_INVOICES {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string contractId FK "contract-contracts.id"
+        string invoiceNumber UK
+        number amount
+        string currency
+        string status "draft|sent|paid|cancelled"
+        string pdfUrl
+        string createdAt "ISO 8601"
+    }
+
+    PAYMENT_WITHDRAWALS {
+        string id PK "UUID"
+        string contractorId FK "contractor-profiles.id"
+        string bankDetailsId FK "contractor-bank-details.id"
+        number amount
+        string currency
+        string status "pending|processing|completed|failed"
+        string stripePayoutId
+        string createdAt "ISO 8601"
+    }
+
+    CONTRACTOR_PROFILES ||--o{ CONTRACTOR_BANK_DETAILS : "has"
+    CONTRACTOR_PROFILES ||--o| CONTRACTOR_TAX_INFO : "has"
+    CONTRACTOR_PROFILES ||--|| CONTRACTOR_WALLET : "has"
+    CONTRACTOR_PROFILES ||--o{ KYC_SESSIONS : "has"
+    CONTRACTOR_PROFILES ||--o{ KYC_DOCUMENTS : "uploads"
+    KYC_SESSIONS ||--o{ KYC_DOCUMENTS : "contains"
+    CONTRACTOR_PROFILES ||--o{ CONTRACT_TIMESHEETS : "submits"
+    CONTRACTOR_PROFILES ||--o{ PAYMENT_INVOICES : "receives"
+    CONTRACTOR_PROFILES ||--o{ PAYMENT_WITHDRAWALS : "requests"
+    CONTRACTOR_BANK_DETAILS ||--o{ PAYMENT_WITHDRAWALS : "used for"
+```
+
+---
+
 ### Tables for Contractor Dashboard
 
 | Table | Service | Purpose |

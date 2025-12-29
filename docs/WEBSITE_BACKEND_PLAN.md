@@ -302,6 +302,137 @@ This plan outlines the backend development for the **Mind-Links marketing websit
 
 ## 3. DynamoDB Schema Design
 
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    WEBSITE_BLOG_POSTS {
+        string id PK "UUID"
+        string slug UK
+        string title
+        string excerpt
+        string content "Markdown"
+        string author
+        string category
+        list tags
+        string featuredImage "S3 URL"
+        string status "draft|published|archived"
+        string publishedAt "ISO 8601"
+        string seoTitle
+        string seoDescription
+        list seoKeywords
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    WEBSITE_PAGES {
+        string id PK "UUID"
+        string slug UK
+        string title
+        string content "Rich text"
+        string template "landing|about|pricing|contact"
+        string seoTitle
+        string seoDescription
+        string status "draft|published|archived"
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    WEBSITE_MEDIA {
+        string id PK "UUID"
+        string filename
+        string originalName
+        string mimeType
+        number size "bytes"
+        string s3Key
+        string s3Url
+        string type "image|video|document"
+        string alt "Alt text"
+        string uploadedAt "ISO 8601"
+        string uploadedBy "Admin ID"
+    }
+
+    WEBSITE_CONTACTS {
+        string id PK "UUID"
+        string name
+        string email
+        string company
+        string phone
+        string message
+        string source "page URL"
+        string status "new|contacted|converted|closed"
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    WEBSITE_DEMO_REQUESTS {
+        string id PK "UUID"
+        string name
+        string email
+        string company
+        string companySize "1-10|11-50|51-200|200+"
+        string useCase
+        string preferredDate "ISO 8601"
+        string status "pending|scheduled|completed|cancelled"
+        string notes
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+    }
+
+    WEBSITE_NEWSLETTER_SUBSCRIPTIONS {
+        string id PK "UUID"
+        string email UK
+        string name
+        string source "page URL"
+        string status "pending|active|unsubscribed"
+        string verificationToken
+        string verifiedAt "ISO 8601"
+        string subscribedAt "ISO 8601"
+        string unsubscribedAt "ISO 8601"
+    }
+
+    WEBSITE_EVENTS {
+        string id PK "UUID"
+        string sessionId FK "website-sessions.id"
+        string type "page_view|click|form_submit|scroll"
+        string page
+        map data "Event-specific data"
+        string timestamp "ISO 8601"
+        string userId "Optional"
+    }
+
+    WEBSITE_SESSIONS {
+        string id PK "UUID"
+        string visitorId "Cookie-based"
+        string userAgent
+        string ipAddress "Hashed"
+        string referrer
+        string utmSource
+        string utmMedium
+        string utmCampaign
+        string startedAt "ISO 8601"
+        string endedAt "ISO 8601"
+        number pageViews
+        number duration "seconds"
+    }
+
+    WEBSITE_METRICS {
+        string id PK "UUID"
+        string date SK "YYYY-MM-DD"
+        string metric "page_views|unique_visitors|bounce_rate|etc"
+        string dimension "page|source|country"
+        string dimensionValue
+        number value
+        string createdAt "ISO 8601"
+    }
+
+    WEBSITE_SESSIONS ||--o{ WEBSITE_EVENTS : "contains"
+    WEBSITE_BLOG_POSTS ||--o{ WEBSITE_MEDIA : "uses"
+    WEBSITE_PAGES ||--o{ WEBSITE_MEDIA : "uses"
+```
+
+---
+
 ### 3.1 Content Service Tables
 
 **Table: `website-blog-posts`**

@@ -1,10 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import { CheckCircle2, DollarSign, Calendar, Clock, FileText, CreditCard, TrendingUp, User, Building2, UserCog, ArrowLeft, ArrowRight, Database, Server, Eye, CheckCheck, AlertCircle, Wallet, Download, BarChart3 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/shared/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
 import { Link } from "react-router-dom";
 
 const PayrollFlow = () => {

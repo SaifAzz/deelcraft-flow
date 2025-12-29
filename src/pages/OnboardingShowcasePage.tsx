@@ -14,12 +14,12 @@ import {
   Eye,
   Play,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { cn } from "@/shared/lib/utils";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 
 export const OnboardingShowcasePage: React.FC = () => {
   const navigate = useNavigate();
@@ -519,4 +519,17 @@ export const OnboardingShowcasePage: React.FC = () => {
 };
 
 export default OnboardingShowcasePage;
+
+
+
+
+
+
+
+
+
+
+
+
+
 

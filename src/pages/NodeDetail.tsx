@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Code, Zap, Lightbulb, Settings, Database, Globe, CheckCircle2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { getNodeById } from "@/data/flowNodes";
-import { cn } from "@/lib/utils";
+import { Card } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Separator } from "@/shared/components/ui/separator";
+import { getNodeById } from "@/shared/data/flowNodes";
+import { cn } from "@/shared/lib/utils";
 
 const colorClasses = {
   client: "bg-client text-white border-client",

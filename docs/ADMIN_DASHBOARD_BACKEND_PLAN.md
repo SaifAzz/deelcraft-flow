@@ -765,6 +765,117 @@ Body:
 
 ## DynamoDB Schemas
 
+### Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    ADMIN_USERS {
+        string id PK "UUID"
+        string email UK
+        string name
+        string passwordHash "bcrypt"
+        string role "super_admin|compliance_admin|support_admin|finance_admin"
+        string status "active|inactive|suspended"
+        list permissions "Granular permissions"
+        string lastLogin "ISO 8601"
+        number actionsCount
+        boolean mfaEnabled
+        string mfaSecret "Encrypted"
+        string createdAt "ISO 8601"
+        string updatedAt "ISO 8601"
+        string createdBy "Admin who created"
+    }
+
+    ADMIN_COUNTRY_RULES {
+        string countryCode PK "ISO 3166-1 alpha-2"
+        string countryName
+        list requiredDocuments "Passport, Tax ID, etc"
+        list optionalDocuments "Bank Statement, etc"
+        string currency "ISO 4217"
+        list taxRequirements
+        string specialRequirements
+        boolean isActive
+        string updatedAt "ISO 8601"
+        string updatedBy "Admin ID"
+    }
+
+    ADMIN_SYSTEM_ALERTS {
+        string id PK "UUID"
+        string type "error|warning|info"
+        string title
+        string message
+        string timestamp "ISO 8601"
+        boolean resolved
+        string resolvedAt "ISO 8601"
+        string resolvedBy "Admin ID"
+        string resolution
+        string relatedEntityType "document|payroll|client"
+        string relatedEntityId
+        number ttl "Auto-delete 90 days"
+    }
+
+    ADMIN_SETTINGS {
+        string id PK "UUID"
+        string settingKey UK
+        string settingValue
+        string category "notifications|security|platform"
+        string dataType "string|number|boolean|json"
+        string description
+        string updatedAt "ISO 8601"
+        string updatedBy "Admin ID"
+    }
+
+    AUDIT_LOGS {
+        string id PK "UUID"
+        string timestamp SK "ISO 8601"
+        string adminId FK "admin-users.id"
+        string adminName
+        string adminEmail
+        string action "document_approved|client_suspended|etc"
+        string entityType "document|client|contractor|payroll"
+        string entityId
+        string entityName
+        map details "Action-specific details"
+        string ipAddress
+        string userAgent
+        string sessionId
+        string createdAt "ISO 8601"
+    }
+
+    AUDIT_EVENTS {
+        string id PK "UUID"
+        string timestamp SK "ISO 8601"
+        string eventType "system_error|security_alert|etc"
+        string source "Service name"
+        string severity "low|medium|high|critical"
+        string message
+        map details
+        string stackTrace "For errors"
+        boolean resolved
+        number ttl "Auto-delete 365 days"
+    }
+
+    QLDB_LEDGER_ENTRIES {
+        string id PK "UUID"
+        string transactionType "ledger_adjustment|payment_approval|refund"
+        string adminId FK "admin-users.id"
+        string contractorId FK "contractor-profiles.id"
+        number amount
+        string currency
+        number balanceBefore
+        number balanceAfter
+        string reason
+        map metadata "Immutable record"
+        string timestamp "ISO 8601"
+    }
+
+    ADMIN_USERS ||--o{ AUDIT_LOGS : "creates"
+    ADMIN_USERS ||--o{ QLDB_LEDGER_ENTRIES : "authorizes"
+    ADMIN_USERS ||--o{ ADMIN_SYSTEM_ALERTS : "resolves"
+```
+
+---
+
 ### Tables for Admin Dashboard
 
 | Table | Service | Purpose |

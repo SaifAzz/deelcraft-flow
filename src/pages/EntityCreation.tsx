@@ -21,11 +21,11 @@ import {
   FileText,
   CheckCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Textarea } from "@/shared/components/ui/textarea";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import {
   Form,
   FormControl,
@@ -34,16 +34,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+} from "@/shared/components/ui/select";
+import { cn } from "@/shared/lib/utils";
+import { useToast } from "@/shared/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -51,7 +51,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/components/ui/dialog";
 
 // Form validation schema
 const entitySchema = z.object({

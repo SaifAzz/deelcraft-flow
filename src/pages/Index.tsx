@@ -1,12 +1,12 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Users, Briefcase, Shield, Info, ArrowRight, Workflow, Layers, Presentation } from "lucide-react";
-import { InteractiveFlowDiagram } from "@/components/InteractiveFlowDiagram";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
+import { Card } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Users, Briefcase, Shield, Info, ArrowRight, Workflow, Layers, Presentation, Database, Globe, Building2, UserCheck, ShieldCheck } from "lucide-react";
+import { InteractiveFlowDiagram } from "@/shared/components/InteractiveFlowDiagram";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -142,6 +142,123 @@ const Index = () => {
             </p>
             <Button variant="outline" className="w-full">
               View Technical Architecture
+            </Button>
+          </Card>
+        </div>
+
+        {/* Architecture Pages */}
+        <div className="grid md:grid-cols-2 gap-6 mt-12 mb-12">
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/full-system-architecture")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-blue-500/10 rounded-lg">
+                <Database className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Full System Architecture</h3>
+                <p className="text-sm text-muted-foreground">Complete system visualization</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Interactive architecture page covering all workflows, services, data flows, and infrastructure components with detailed API documentation.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Full System Architecture
+            </Button>
+          </Card>
+
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/backend-microservices-architecture")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-purple-500/10 rounded-lg">
+                <Layers className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Backend Microservices</h3>
+                <p className="text-sm text-muted-foreground">8 independent services on AWS</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Complete microservices architecture with service details, infrastructure components, communication patterns, data flows, and deployment strategies.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Microservices Architecture
+            </Button>
+          </Card>
+
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/website-backend-architecture")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-green-500/10 rounded-lg">
+                <Globe className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Website Backend</h3>
+                <p className="text-sm text-muted-foreground">3 services for marketing website</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Backend services for the marketing website: Content Management, Lead Generation, and Analytics. Integrated with AWS infrastructure.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Website Backend Architecture
+            </Button>
+          </Card>
+
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/client-dashboard-backend")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-blue-500/10 rounded-lg">
+                <Building2 className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Client Dashboard Backend</h3>
+                <p className="text-sm text-muted-foreground">6 services, 47+ API endpoints</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Complete backend for Client Dashboard: contractor management, contracts, payroll, escrow, and compliance. Full API documentation included.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Client Dashboard Backend
+            </Button>
+          </Card>
+
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/contractor-dashboard-backend")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-emerald-500/10 rounded-lg">
+                <UserCheck className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Contractor Dashboard Backend</h3>
+                <p className="text-sm text-muted-foreground">5 services, 30+ API endpoints</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Backend services for Contractor Dashboard: profile management, contracts, KYC, payments, and notifications. Detailed data flows included.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Contractor Dashboard Backend
+            </Button>
+          </Card>
+
+          <Card className="p-6 shadow-soft hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/admin-dashboard-backend")}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-red-500/10 rounded-lg">
+                <ShieldCheck className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground">Admin Dashboard Backend</h3>
+                <p className="text-sm text-muted-foreground">9 services, 55+ API endpoints</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Platform management APIs: client approval, document review, payroll oversight, compliance monitoring, and comprehensive audit logging with QLDB.
+            </p>
+            <Button variant="outline" className="w-full">
+              View Admin Dashboard Backend
             </Button>
           </Card>
         </div>

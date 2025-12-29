@@ -16,11 +16,11 @@ import {
   Headphones,
   Link as LinkIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { Textarea } from "@/shared/components/ui/textarea";
+import { Checkbox } from "@/shared/components/ui/checkbox";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import {
   Form,
   FormControl,
@@ -29,11 +29,11 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { cn } from "@/lib/utils";
-import { aiService } from "@/services/aiService";
+} from "@/shared/components/ui/form";
+import { cn } from "@/shared/lib/utils";
+import { aiService } from "@/shared/services/aiService";
 import { Loader2, Wand2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/shared/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -41,9 +41,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import ClientDashboard from "./ClientDashboard";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
+} from "@/shared/components/ui/dialog";
+import ClientDashboard from "../dashboards/client/pages/Dashboard";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
 
 // Form validation schema
 const onboardingSchema = z.object({

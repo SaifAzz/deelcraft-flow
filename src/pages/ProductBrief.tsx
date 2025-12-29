@@ -1,12 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Badge } from "@/shared/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
 import { CheckCircle2, AlertTriangle, TrendingUp, Users, FileText, DollarSign, Shield, Clock, Target, Rocket, BarChart3, Globe, Zap, ArrowLeft, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/shared/components/ui/button";
+import { Progress } from "@/shared/components/ui/progress";
 import { Link } from "react-router-dom";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
 
 const ProductBrief = () => {
   return (

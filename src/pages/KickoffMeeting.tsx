@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Users, Briefcase, Shield, Target, TrendingUp, Calendar, CheckCircle2, AlertTriangle, DollarSign, Code, Database, Cloud, Zap, FileText, Presentation, ArrowRight, ArrowDown, Settings, Mail, CreditCard, Lock, FileCheck, Building2, UserCheck } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
+import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/components/ui/table";
+import { Separator } from "@/shared/components/ui/separator";
 import { Link } from "react-router-dom";
-import { MindLinksLogo } from "@/components/MindLinksLogo";
+import { MindLinksLogo } from "@/shared/components/MindLinksLogo";
 
 const KickoffMeeting = () => {
 
