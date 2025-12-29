@@ -41,12 +41,12 @@ import {
   Send,
   Download
 } from "lucide-react";
-import { Card } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
-import { Separator } from "@/shared/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const WebsiteBackendArchitecture = () => {
   const navigate = useNavigate();
@@ -1913,5 +1913,6 @@ resource "aws_ecs_task_definition" "content_service" {
 };
 
 export default WebsiteBackendArchitecture;
+
 
 

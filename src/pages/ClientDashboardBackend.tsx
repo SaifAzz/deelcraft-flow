@@ -26,10 +26,10 @@ import {
   BarChart3,
   Send
 } from "lucide-react";
-import { Card } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ClientDashboardBackend = () => {
   const navigate = useNavigate();
@@ -706,3 +706,4 @@ const ClientDashboardBackend = () => {
 };
 
 export default ClientDashboardBackend;
+

@@ -29,12 +29,13 @@ import {
   XCircle,
   Eye,
   Lock,
-  Key
+  Key,
 } from "lucide-react";
-import { Card } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { Badge } from "@/shared/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
 
 const AdminDashboardBackend = () => {
   const navigate = useNavigate();

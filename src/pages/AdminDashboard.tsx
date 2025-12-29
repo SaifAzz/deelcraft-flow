@@ -50,6 +50,8 @@ import {
   MapPin,
   UserPlus,
   CreditCard,
+  MessageSquare,
+  Video,
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { useToast } from "@/hooks/use-toast";
@@ -93,7 +95,7 @@ import {
   type ClientProfile,
 } from "@/data/mockData";
 
-type Page = "dashboard" | "clients" | "documents" | "contracts" | "payroll" | "compliance" | "analytics" | "countries" | "audit" | "settings";
+type Page = "dashboard" | "clients" | "documents" | "contracts" | "payroll" | "compliance" | "analytics" | "countries" | "audit" | "settings" | "servicerequest" | "demorequests";
 
 // Notification interface
 interface AdminNotification {
@@ -207,6 +209,8 @@ const AdminDashboard = () => {
     { id: "analytics" as Page, name: "Analytics", icon: BarChart3 },
     { id: "countries" as Page, name: "Countries", icon: Globe },
     { id: "audit" as Page, name: "Audit Logs", icon: ScrollText },
+    { id: "servicerequest" as Page, name: "Service Request", icon: MessageSquare },
+    { id: "demorequests" as Page, name: "Demo Requests", icon: Video },
     { id: "settings" as Page, name: "Settings", icon: Settings },
   ];
 
@@ -635,6 +639,28 @@ const AdminDashboard = () => {
                 <AuditLogs auditLogs={auditLogs} />
               </motion.div>
             )}
+            {activePage === "servicerequest" && (
+              <motion.div
+                key="servicerequest"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ServiceRequestManagement />
+              </motion.div>
+            )}
+            {activePage === "demorequests" && (
+              <motion.div
+                key="demorequests"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <DemoRequestsManagement />
+              </motion.div>
+            )}
             {activePage === "settings" && (
               <motion.div
                 key="settings"
@@ -654,20 +680,100 @@ const AdminDashboard = () => {
 };
 
 // ==================== CLIENTS MANAGEMENT ====================
+interface Client {
+  id: string;
+  companyName?: string;
+  name?: string;
+  company?: string;
+  country?: string;
+  industry?: string;
+  status?: string;
+  monthlySpend?: number;
+  totalContractors?: number;
+  verificationStatus?: string;
+  pointOfContact?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+  email?: string;
+  contactEmail?: string;
+  [key: string]: any;
+}
+
 const ClientsManagement = ({ toast }: { toast: any }) => {
   const navigate = useNavigate();
+  const { toast: toastHook } = useToast();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "pending_review" | "suspended">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const filteredClients = mockClientProfiles.filter(client => {
+  const API_BASE_URL = "http://aws-cicd-demo-backend-1072000331.me-central-1.elb.amazonaws.com/api/v1/data/clients";
+
+  // Fetch clients from API
+  React.useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(API_BASE_URL);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch clients: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Handle both array and object responses
+        const clientsArray = Array.isArray(data) ? data : (data.data || data.clients || []);
+        setClients(clientsArray);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch clients";
+        setError(errorMessage);
+        toastHook({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, [toastHook]);
+
+  // Normalize client data for consistent access
+  const normalizeClient = (client: Client): Client => {
+    return {
+      ...client,
+      companyName: client.companyName || client.name || client.company || "N/A",
+      status: client.status || "active",
+      country: client.country || "N/A",
+      industry: client.industry || "N/A",
+      monthlySpend: client.monthlySpend || 0,
+      totalContractors: client.totalContractors || 0,
+      verificationStatus: client.verificationStatus || "pending",
+      pointOfContact: client.pointOfContact || {
+        firstName: client.firstName || "N/A",
+        lastName: client.lastName || "",
+        email: client.email || client.contactEmail || "N/A",
+      },
+    };
+  };
+
+  const normalizedClients = clients.map(normalizeClient);
+
+  const filteredClients = normalizedClients.filter(client => {
     const matchesStatus = filterStatus === "all" || client.status === filterStatus;
     const matchesSearch = searchQuery === "" ||
-      client.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.pointOfContact.email.toLowerCase().includes(searchQuery.toLowerCase());
+      (client.companyName && client.companyName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (client.country && client.country.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (client.industry && client.industry.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (client.pointOfContact?.email && client.pointOfContact.email.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
@@ -725,7 +831,7 @@ const ClientsManagement = ({ toast }: { toast: any }) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-foreground mb-1">{mockClientProfiles.length}</div>
+            <div className="text-3xl font-bold text-foreground mb-1">{clients.length}</div>
             <p className="text-xs font-medium text-muted-foreground">Registered companies</p>
           </CardContent>
         </Card>
@@ -738,7 +844,7 @@ const ClientsManagement = ({ toast }: { toast: any }) => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground mb-1">
-              {mockClientProfiles.filter(c => c.status === "active").length}
+              {normalizedClients.filter(c => c.status === "active").length}
             </div>
             <p className="text-xs font-medium text-muted-foreground">Verified & active</p>
           </CardContent>
@@ -752,7 +858,7 @@ const ClientsManagement = ({ toast }: { toast: any }) => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground mb-1">
-              {mockClientProfiles.filter(c => c.status === "pending_review").length}
+              {normalizedClients.filter(c => c.status === "pending_review").length}
             </div>
             <p className="text-xs font-medium text-muted-foreground">Awaiting approval</p>
           </CardContent>
@@ -766,7 +872,7 @@ const ClientsManagement = ({ toast }: { toast: any }) => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground mb-1">
-              {mockClientProfiles.reduce((sum, c) => sum + c.totalContractors, 0)}
+              {normalizedClients.reduce((sum, c) => sum + (c.totalContractors || 0), 0)}
             </div>
             <p className="text-xs font-medium text-muted-foreground">Across all clients</p>
           </CardContent>
@@ -776,112 +882,125 @@ const ClientsManagement = ({ toast }: { toast: any }) => {
       {/* Clients Table */}
       <Card className="border border-border/30 shadow-sm">
         <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="font-semibold">Company</TableHead>
-                  <TableHead className="font-semibold">Industry</TableHead>
-                  <TableHead className="font-semibold">Country</TableHead>
-                  <TableHead className="font-semibold">Contact</TableHead>
-                  <TableHead className="font-semibold text-right">Monthly Spend</TableHead>
-                  <TableHead className="font-semibold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredClients.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center">
-                      <div className="flex flex-col items-center justify-center py-8">
-                        <Building2 className="h-12 w-12 text-muted-foreground/30 mb-3" />
-                        <h3 className="text-sm font-semibold text-foreground mb-1">No clients found</h3>
-                        <p className="text-xs text-muted-foreground">Try adjusting your search or filters</p>
-                      </div>
-                    </TableCell>
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="mt-4 text-sm text-muted-foreground">Loading clients...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 mx-auto mb-3 text-destructive" />
+              <h3 className="text-sm font-semibold text-foreground mb-1">Error loading clients</h3>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="font-semibold">Company</TableHead>
+                    <TableHead className="font-semibold">Industry</TableHead>
+                    <TableHead className="font-semibold">Country</TableHead>
+                    <TableHead className="font-semibold">Contact</TableHead>
+                    <TableHead className="font-semibold text-right">Monthly Spend</TableHead>
+                    <TableHead className="font-semibold text-right">Actions</TableHead>
                   </TableRow>
-                ) : (
-                  paginatedClients.map((client) => (
-                    <TableRow key={client.id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="relative flex-shrink-0">
-                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-bold text-slate-700">
-                              {client.companyName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                            </div>
-                            {client.verificationStatus === "verified" && (
-                              <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
-                                <CheckCircle2 className="h-2.5 w-2.5 text-white" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-foreground truncate">{client.companyName}</p>
-                            <div className="flex gap-1.5 mt-1">
-                              {client.status === "active" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100">
-                                  Active
-                                </Badge>
-                              )}
-                              {client.status === "pending_review" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
-                                  Pending Review
-                                </Badge>
-                              )}
-                              {client.status === "suspended" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100">
-                                  Suspended
-                                </Badge>
-                              )}
-                              {client.verificationStatus === "verified" && (
-                                <Badge className="text-[10px] px-1.5 py-0 h-4 bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-100">
-                                  Verified
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
+                </TableHeader>
+                <TableBody>
+                  {filteredClients.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="h-32 text-center">
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <Building2 className="h-12 w-12 text-muted-foreground/30 mb-3" />
+                          <h3 className="text-sm font-semibold text-foreground mb-1">No clients found</h3>
+                          <p className="text-xs text-muted-foreground">Try adjusting your search or filters</p>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-foreground">{client.industry}</span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1.5">
-                          <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span className="text-sm text-foreground">{client.country}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">
-                            {client.pointOfContact.firstName} {client.pointOfContact.lastName}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">
-                            {client.pointOfContact.email}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <span className="text-sm font-semibold text-emerald-700">
-                          ${(client.monthlySpend / 1000).toFixed(1)}k
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:bg-slate-100"
-                          onClick={() => navigate(`/admin/client/${client.id}`)}
-                        >
-                          View Details
-                          <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                        </Button>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ) : (
+                    paginatedClients.map((client) => (
+                      <TableRow key={client.id} className="hover:bg-muted/30 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="relative flex-shrink-0">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-bold text-slate-700">
+                                {(client.companyName || "N/A").split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                              </div>
+                              {client.verificationStatus === "verified" && (
+                                <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
+                                  <CheckCircle2 className="h-2.5 w-2.5 text-white" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold text-foreground truncate">{client.companyName || "N/A"}</p>
+                              <div className="flex gap-1.5 mt-1">
+                                {client.status === "active" && (
+                                  <Badge className="text-[10px] px-1.5 py-0 h-4 bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-100">
+                                    Active
+                                  </Badge>
+                                )}
+                                {client.status === "pending_review" && (
+                                  <Badge className="text-[10px] px-1.5 py-0 h-4 bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
+                                    Pending Review
+                                  </Badge>
+                                )}
+                                {client.status === "suspended" && (
+                                  <Badge className="text-[10px] px-1.5 py-0 h-4 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-100">
+                                    Suspended
+                                  </Badge>
+                                )}
+                                {client.verificationStatus === "verified" && (
+                                  <Badge className="text-[10px] px-1.5 py-0 h-4 bg-indigo-100 text-indigo-800 border-indigo-200 hover:bg-indigo-100">
+                                    Verified
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-foreground">{client.industry}</span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-sm text-foreground">{client.country}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {client.pointOfContact?.firstName || "N/A"} {client.pointOfContact?.lastName || ""}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                              {client.pointOfContact?.email || "N/A"}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <span className="text-sm font-semibold text-emerald-700">
+                            {client.monthlySpend ? `$${(client.monthlySpend / 1000).toFixed(1)}k` : "—"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-slate-100"
+                            onClick={() => navigate(`/admin/client/${client.id}`)}
+                          >
+                            View Details
+                            <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
 
         {/* Pagination */}
@@ -2694,17 +2813,83 @@ const PayrollMonitoring = ({
 };
 
 // ==================== COMPLIANCE MONITORING ====================
+interface Contractor {
+  id: string;
+  name?: string;
+  fullName?: string;
+  email?: string;
+  country?: string;
+  complianceStatus?: string;
+  kycStatus?: string;
+  complianceScore?: number;
+  missingDocs?: number;
+  [key: string]: any;
+}
+
 const ComplianceMonitoring = () => {
+  const { toast } = useToast();
+  const [contractors, setContractors] = useState<Contractor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const filteredContractors = mockContractors.filter(contractor =>
+  const API_BASE_URL = "http://aws-cicd-demo-backend-1072000331.me-central-1.elb.amazonaws.com/api/v1/data/contractors";
+
+  // Fetch contractors from API
+  React.useEffect(() => {
+    const fetchContractors = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(API_BASE_URL);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch contractors: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Handle both array and object responses
+        const contractorsArray = Array.isArray(data) ? data : (data.data || data.contractors || []);
+        setContractors(contractorsArray);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch contractors";
+        setError(errorMessage);
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContractors();
+  }, [toast]);
+
+  // Normalize contractor data for consistent access
+  const normalizeContractor = (contractor: Contractor): Contractor => {
+    return {
+      ...contractor,
+      name: contractor.name || contractor.fullName || "N/A",
+      email: contractor.email || "N/A",
+      country: contractor.country || "N/A",
+      complianceStatus: contractor.complianceStatus || contractor.kycStatus || "incomplete",
+      complianceScore: contractor.complianceScore || 0,
+      missingDocs: contractor.missingDocs || 0,
+    };
+  };
+
+  const normalizedContractors = contractors.map(normalizeContractor);
+
+  const filteredContractors = normalizedContractors.filter(contractor =>
     searchQuery === "" ||
-    contractor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contractor.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contractor.country.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contractor.complianceStatus.toLowerCase().includes(searchQuery.toLowerCase())
+    (contractor.name && contractor.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (contractor.email && contractor.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (contractor.country && contractor.country.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (contractor.complianceStatus && contractor.complianceStatus.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const totalItems = filteredContractors.length;
@@ -2714,9 +2899,9 @@ const ComplianceMonitoring = () => {
     currentPage * itemsPerPage
   );
 
-  const fullyCompliant = mockContractors.filter(c => c.complianceStatus === "approved").length;
-  const incomplete = mockContractors.filter(c => c.complianceStatus === "incomplete").length;
-  const expiring = mockContractors.filter(c => c.complianceStatus === "expiring").length;
+  const fullyCompliant = normalizedContractors.filter(c => c.complianceStatus === "approved").length;
+  const incomplete = normalizedContractors.filter(c => c.complianceStatus === "incomplete").length;
+  const expiring = normalizedContractors.filter(c => c.complianceStatus === "expiring").length;
 
   return (
     <motion.div
@@ -2786,58 +2971,83 @@ const ComplianceMonitoring = () => {
           <CardDescription>View compliance status for all contractors</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="font-semibold">Contractor</TableHead>
-                  <TableHead className="font-semibold">Country</TableHead>
-                  <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Compliance Score</TableHead>
-                  <TableHead className="font-semibold">Missing Docs</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedContractors.map((contractor) => (
-                  <TableRow key={contractor.id} className="hover:bg-muted/30 transition-colors">
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{contractor.name}</p>
-                        <p className="text-xs text-muted-foreground">{contractor.email}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{contractor.country}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          contractor.complianceStatus === "approved"
-                            ? "bg-emerald-700"
-                            : contractor.complianceStatus === "expiring"
-                              ? "bg-amber-700"
-                              : "bg-slate-700"
-                        }
-                      >
-                        {contractor.complianceStatus}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={contractor.complianceScore} className="w-20 h-2" />
-                        <span className="text-sm font-medium">{contractor.complianceScore}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {contractor.missingDocs > 0 ? (
-                        <Badge className="bg-slate-700">{contractor.missingDocs} missing</Badge>
-                      ) : (
-                        <span className="text-sm text-slate-500">None</span>
-                      )}
-                    </TableCell>
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="mt-4 text-sm text-muted-foreground">Loading contractors...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 mx-auto mb-3 text-destructive" />
+              <h3 className="text-sm font-semibold text-foreground mb-1">Error loading contractors</h3>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          ) : (
+            <div className="rounded-lg border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="font-semibold">Contractor</TableHead>
+                    <TableHead className="font-semibold">Country</TableHead>
+                    <TableHead className="font-semibold">Status</TableHead>
+                    <TableHead className="font-semibold">Compliance Score</TableHead>
+                    <TableHead className="font-semibold">Missing Docs</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                </TableHeader>
+                <TableBody>
+                  {paginatedContractors.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-32 text-center">
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <Users className="h-12 w-12 text-muted-foreground/30 mb-3" />
+                          <h3 className="text-sm font-semibold text-foreground mb-1">No contractors found</h3>
+                          <p className="text-xs text-muted-foreground">Try adjusting your search</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedContractors.map((contractor) => (
+                      <TableRow key={contractor.id} className="hover:bg-muted/30 transition-colors">
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{contractor.name || "N/A"}</p>
+                            <p className="text-xs text-muted-foreground">{contractor.email || "N/A"}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{contractor.country || "N/A"}</TableCell>
+                        <TableCell>
+                          <Badge
+                            className={
+                              contractor.complianceStatus === "approved"
+                                ? "bg-emerald-700"
+                                : contractor.complianceStatus === "expiring"
+                                  ? "bg-amber-700"
+                                  : "bg-slate-700"
+                            }
+                          >
+                            {contractor.complianceStatus || "incomplete"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Progress value={contractor.complianceScore || 0} className="w-20 h-2" />
+                            <span className="text-sm font-medium">{contractor.complianceScore || 0}%</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {(contractor.missingDocs || 0) > 0 ? (
+                            <Badge className="bg-slate-700">{contractor.missingDocs} missing</Badge>
+                          ) : (
+                            <span className="text-sm text-slate-500">None</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -3913,6 +4123,992 @@ const AuditLogs = ({ auditLogs }: { auditLogs: AuditLog[] }) => {
           )}
         </CardContent>
       </Card>
+    </motion.div>
+  );
+};
+
+// ==================== SERVICE REQUEST MANAGEMENT ====================
+interface Lead {
+  id: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  message?: string;
+  type?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: any; // For any additional fields from the API
+}
+
+const ServiceRequestManagement = () => {
+  const { toast } = useToast();
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const itemsPerPage = 10;
+
+  const API_BASE_URL = "http://aws-cicd-demo-backend-1072000331.me-central-1.elb.amazonaws.com/api/v1/data/leads";
+
+  // Fetch leads from API
+  React.useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(API_BASE_URL);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch leads: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Handle both array and object responses
+        const leadsArray = Array.isArray(data) ? data : (data.data || data.leads || []);
+        setLeads(leadsArray);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch leads";
+        setError(errorMessage);
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeads();
+  }, [toast]);
+
+  const filteredLeads = leads.filter(lead =>
+    searchQuery === "" ||
+    (lead.name && lead.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (lead.company && lead.company.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (lead.phone && lead.phone.includes(searchQuery)) ||
+    (lead.message && lead.message.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const totalItems = filteredLeads.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedLeads = filteredLeads.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to page 1 when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold">Service Requests</h1>
+        <p className="text-muted-foreground mt-1">Manage and review all lead requests from the website</p>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="flex items-center justify-end gap-3 mb-8">
+        <div className="relative w-[300px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search leads..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-10"
+          />
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-slate-50/50 to-slate-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Leads</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-slate-200/50">
+              <MessageSquare className="h-5 w-5 text-slate-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">{leads.length}</div>
+            <p className="text-xs font-medium text-muted-foreground">All service requests</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-blue-50/50 to-blue-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">New Requests</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-blue-200/50">
+              <Clock className="h-5 w-5 text-blue-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {leads.filter(l => {
+                if (!l.createdAt) return false;
+                const created = new Date(l.createdAt);
+                const daysSince = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
+                return daysSince <= 7;
+              }).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Last 7 days</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-emerald-50/50 to-emerald-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">With Email</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-emerald-200/50">
+              <User className="h-5 w-5 text-emerald-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {leads.filter(l => l.email).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Contactable leads</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-purple-50/50 to-purple-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">With Company</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-purple-200/50">
+              <Building2 className="h-5 w-5 text-purple-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {leads.filter(l => l.company).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Business leads</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Leads Table */}
+      <Card className="border border-border/30 shadow-sm">
+        <CardHeader>
+          <CardTitle>All Service Requests ({totalItems})</CardTitle>
+          <CardDescription>Lead requests submitted through the website contact forms</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="mt-4 text-sm text-muted-foreground">Loading leads...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 mx-auto mb-3 text-destructive" />
+              <h3 className="text-sm font-semibold text-foreground mb-1">Error loading leads</h3>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="font-semibold">Name</TableHead>
+                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Phone</TableHead>
+                      <TableHead className="font-semibold">Company</TableHead>
+                      <TableHead className="font-semibold">Type</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Created</TableHead>
+                      <TableHead className="font-semibold text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedLeads.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="h-32 text-center">
+                          <div className="flex flex-col items-center justify-center py-8">
+                            <MessageSquare className="h-12 w-12 text-muted-foreground/30 mb-3" />
+                            <h3 className="text-sm font-semibold text-foreground mb-1">No leads found</h3>
+                            <p className="text-xs text-muted-foreground">Try adjusting your search</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      paginatedLeads.map((lead) => (
+                        <TableRow key={lead.id} className="hover:bg-muted/30 transition-colors">
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-bold text-slate-700">
+                                {lead.name ? lead.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : '??'}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="font-semibold text-foreground truncate">{lead.name || "N/A"}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-foreground">{lead.email || "—"}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-foreground">{lead.phone || "—"}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-foreground">{lead.company || "—"}</span>
+                          </TableCell>
+                          <TableCell>
+                            {lead.type ? (
+                              <Badge variant="outline" className="capitalize">{lead.type}</Badge>
+                            ) : (
+                              <span className="text-sm text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {lead.status ? (
+                              <Badge
+                                variant={
+                                  lead.status === "new" || lead.status === "pending"
+                                    ? "default"
+                                    : lead.status === "contacted"
+                                      ? "secondary"
+                                      : "outline"
+                                }
+                                className="capitalize"
+                              >
+                                {lead.status}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline">New</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {lead.createdAt
+                              ? new Date(lead.createdAt).toLocaleDateString()
+                              : "—"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="hover:bg-slate-100"
+                              onClick={() => {
+                                setSelectedLead(lead);
+                                setDetailsOpen(true);
+                              }}
+                            >
+                              <Eye className="h-3.5 w-3.5 mr-1" />
+                              View
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="border-t border-border/30 px-6 py-4 flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Showing <span className="font-medium text-foreground">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+                    <span className="font-medium text-foreground">{Math.min(currentPage * itemsPerPage, totalItems)}</span> of{' '}
+                    <span className="font-medium text-foreground">{totalItems}</span> leads
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="h-8"
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="h-8 w-8 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (page === currentPage - 2 || page === currentPage + 2) {
+                          return <span key={page} className="text-muted-foreground px-1">...</span>;
+                        }
+                        return null;
+                      })}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-8"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Lead Details Modal */}
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Lead Details</DialogTitle>
+            <DialogDescription>
+              {selectedLead && (selectedLead.name || selectedLead.email || `Lead #${selectedLead.id}`)}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedLead && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                {selectedLead.name && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Name</Label>
+                    <p className="font-semibold">{selectedLead.name}</p>
+                  </div>
+                )}
+                {selectedLead.email && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Email</Label>
+                    <p className="font-semibold">{selectedLead.email}</p>
+                  </div>
+                )}
+                {selectedLead.phone && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Phone</Label>
+                    <p className="font-semibold">{selectedLead.phone}</p>
+                  </div>
+                )}
+                {selectedLead.company && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Company</Label>
+                    <p className="font-semibold">{selectedLead.company}</p>
+                  </div>
+                )}
+                {selectedLead.type && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Type</Label>
+                    <Badge variant="outline" className="capitalize">{selectedLead.type}</Badge>
+                  </div>
+                )}
+                {selectedLead.status && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Status</Label>
+                    <Badge
+                      variant={
+                        selectedLead.status === "new" || selectedLead.status === "pending"
+                          ? "default"
+                          : selectedLead.status === "contacted"
+                            ? "secondary"
+                            : "outline"
+                      }
+                      className="capitalize"
+                    >
+                      {selectedLead.status}
+                    </Badge>
+                  </div>
+                )}
+                {selectedLead.createdAt && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Created</Label>
+                    <p className="font-semibold text-sm">
+                      {new Date(selectedLead.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+                {selectedLead.updatedAt && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Last Updated</Label>
+                    <p className="font-semibold text-sm">
+                      {new Date(selectedLead.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {selectedLead.message && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Message</Label>
+                  <div className="p-4 border rounded-lg bg-muted/30">
+                    <p className="text-sm whitespace-pre-wrap">{selectedLead.message}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  );
+};
+
+// ==================== DEMO REQUESTS MANAGEMENT ====================
+interface DemoRequest {
+  demoId: string;
+  companyInformation?: {
+    companySize?: string;
+    industry?: string;
+    companyName?: string;
+  };
+  schedulingDetails?: {
+    preferredDate?: string;
+    preferredTime?: string;
+    timezone?: string;
+  };
+  personalInformation?: {
+    fullName?: string;
+    phone?: string;
+    email?: string;
+  };
+  createdAt?: string;
+  message?: string;
+  roleAndPurpose?: {
+    jobTitle?: string;
+    mainReason?: string;
+    useCase?: string;
+  };
+  email?: string;
+  consent?: {
+    marketingOptIn?: boolean;
+    agreeToTerms?: boolean;
+  };
+  [key: string]: any;
+}
+
+const DemoRequestsManagement = () => {
+  const { toast } = useToast();
+  const [demoRequests, setDemoRequests] = useState<DemoRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<DemoRequest | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const itemsPerPage = 10;
+
+  const API_BASE_URL = "http://aws-cicd-demo-backend-1072000331.me-central-1.elb.amazonaws.com/api/v1/data/demo-requests";
+
+  // Fetch demo requests from API
+  React.useEffect(() => {
+    const fetchDemoRequests = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(API_BASE_URL);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch demo requests: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Handle the API response structure: { success, count, data: [...] }
+        const requestsArray = Array.isArray(data) ? data : (data.data || data.demoRequests || []);
+        setDemoRequests(requestsArray);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch demo requests";
+        setError(errorMessage);
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDemoRequests();
+  }, [toast]);
+
+  const filteredRequests = demoRequests.filter(request => {
+    if (searchQuery === "") return true;
+    const query = searchQuery.toLowerCase();
+    const name = request.personalInformation?.fullName || "";
+    const email = request.email || request.personalInformation?.email || "";
+    const company = request.companyInformation?.companyName || "";
+    const phone = request.personalInformation?.phone || "";
+    const message = request.message || "";
+
+    return (
+      name.toLowerCase().includes(query) ||
+      email.toLowerCase().includes(query) ||
+      company.toLowerCase().includes(query) ||
+      phone.includes(searchQuery) ||
+      message.toLowerCase().includes(query)
+    );
+  });
+
+  const totalItems = filteredRequests.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const paginatedRequests = filteredRequests.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to page 1 when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-6"
+    >
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold">Demo Requests</h1>
+        <p className="text-muted-foreground mt-1">Manage and review all demo requests from the website</p>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="flex items-center justify-end gap-3 mb-8">
+        <div className="relative w-[300px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search demo requests..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-10"
+          />
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-slate-50/50 to-slate-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Requests</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-slate-200/50">
+              <Video className="h-5 w-5 text-slate-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">{demoRequests.length}</div>
+            <p className="text-xs font-medium text-muted-foreground">All demo requests</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-blue-50/50 to-blue-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">New Requests</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-blue-200/50">
+              <Clock className="h-5 w-5 text-blue-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {demoRequests.filter(r => {
+                if (!r.createdAt) return false;
+                const created = new Date(r.createdAt);
+                const daysSince = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
+                return daysSince <= 7;
+              }).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Last 7 days</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-emerald-50/50 to-emerald-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">With Email</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-emerald-200/50">
+              <User className="h-5 w-5 text-emerald-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {demoRequests.filter(r => r.email || r.personalInformation?.email).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Contactable requests</p>
+          </CardContent>
+        </Card>
+        <Card className="border border-border/30 shadow-sm bg-gradient-to-br from-purple-50/50 to-purple-50/20 hover:shadow-md transition-all duration-300 group">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">With Company</CardTitle>
+            <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center group-hover:scale-110 transition-transform border border-purple-200/50">
+              <Building2 className="h-5 w-5 text-purple-700" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {demoRequests.filter(r => r.companyInformation?.companyName).length}
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Business requests</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Demo Requests Table */}
+      <Card className="border border-border/30 shadow-sm">
+        <CardHeader>
+          <CardTitle>All Demo Requests ({totalItems})</CardTitle>
+          <CardDescription>Demo requests submitted through the website</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="p-8 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p className="mt-4 text-sm text-muted-foreground">Loading demo requests...</p>
+            </div>
+          ) : error ? (
+            <div className="p-8 text-center">
+              <AlertCircle className="h-12 w-12 mx-auto mb-3 text-destructive" />
+              <h3 className="text-sm font-semibold text-foreground mb-1">Error loading demo requests</h3>
+              <p className="text-xs text-muted-foreground">{error}</p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="font-semibold">Name</TableHead>
+                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Phone</TableHead>
+                      <TableHead className="font-semibold">Company</TableHead>
+                      <TableHead className="font-semibold">Preferred Date</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Created</TableHead>
+                      <TableHead className="font-semibold text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedRequests.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="h-32 text-center">
+                          <div className="flex flex-col items-center justify-center py-8">
+                            <Video className="h-12 w-12 text-muted-foreground/30 mb-3" />
+                            <h3 className="text-sm font-semibold text-foreground mb-1">No demo requests found</h3>
+                            <p className="text-xs text-muted-foreground">Try adjusting your search</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      paginatedRequests.map((request) => {
+                        const name = request.personalInformation?.fullName || "N/A";
+                        const email = request.email || request.personalInformation?.email || "—";
+                        const phone = request.personalInformation?.phone || "—";
+                        const company = request.companyInformation?.companyName || "—";
+                        const preferredDate = request.schedulingDetails?.preferredDate;
+                        const preferredTime = request.schedulingDetails?.preferredTime;
+                        const timezone = request.schedulingDetails?.timezone;
+
+                        return (
+                          <TableRow key={request.demoId} className="hover:bg-muted/30 transition-colors">
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-bold text-slate-700">
+                                  {name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="font-semibold text-foreground truncate">{name}</p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm text-foreground">{email}</span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm text-foreground">{phone}</span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm text-foreground">{company}</span>
+                            </TableCell>
+                            <TableCell>
+                              {preferredDate ? (
+                                <span className="text-sm text-foreground">
+                                  {new Date(preferredDate).toLocaleDateString()}
+                                  {preferredTime && ` ${preferredTime}`}
+                                  {timezone && ` (${timezone})`}
+                                </span>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">New</Badge>
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {request.createdAt
+                                ? new Date(request.createdAt).toLocaleDateString()
+                                : "—"}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="hover:bg-slate-100"
+                                onClick={() => {
+                                  setSelectedRequest(request);
+                                  setDetailsOpen(true);
+                                }}
+                              >
+                                <Eye className="h-3.5 w-3.5 mr-1" />
+                                View
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="border-t border-border/30 px-6 py-4 flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Showing <span className="font-medium text-foreground">{((currentPage - 1) * itemsPerPage) + 1}</span> to{' '}
+                    <span className="font-medium text-foreground">{Math.min(currentPage * itemsPerPage, totalItems)}</span> of{' '}
+                    <span className="font-medium text-foreground">{totalItems}</span> requests
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="h-8"
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="h-8 w-8 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (page === currentPage - 2 || page === currentPage + 2) {
+                          return <span key={page} className="text-muted-foreground px-1">...</span>;
+                        }
+                        return null;
+                      })}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-8"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Demo Request Details Modal */}
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Demo Request Details</DialogTitle>
+            <DialogDescription>
+              {selectedRequest && (
+                selectedRequest.personalInformation?.fullName ||
+                selectedRequest.email ||
+                `Request #${selectedRequest.demoId}`
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedRequest && (
+            <div className="space-y-6">
+              {/* Personal Information */}
+              <div>
+                <Label className="text-sm font-semibold mb-3 block">Personal Information</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  {selectedRequest.personalInformation?.fullName && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Full Name</Label>
+                      <p className="font-semibold">{selectedRequest.personalInformation.fullName}</p>
+                    </div>
+                  )}
+                  {(selectedRequest.email || selectedRequest.personalInformation?.email) && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Email</Label>
+                      <p className="font-semibold">{selectedRequest.email || selectedRequest.personalInformation?.email}</p>
+                    </div>
+                  )}
+                  {selectedRequest.personalInformation?.phone && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Phone</Label>
+                      <p className="font-semibold">{selectedRequest.personalInformation.phone}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Company Information */}
+              {selectedRequest.companyInformation && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Company Information</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedRequest.companyInformation.companyName && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Company Name</Label>
+                        <p className="font-semibold">{selectedRequest.companyInformation.companyName}</p>
+                      </div>
+                    )}
+                    {selectedRequest.companyInformation.industry && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Industry</Label>
+                        <p className="font-semibold">{selectedRequest.companyInformation.industry}</p>
+                      </div>
+                    )}
+                    {selectedRequest.companyInformation.companySize && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Company Size</Label>
+                        <p className="font-semibold">{selectedRequest.companyInformation.companySize}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Role and Purpose */}
+              {selectedRequest.roleAndPurpose && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Role and Purpose</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedRequest.roleAndPurpose.jobTitle && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Job Title</Label>
+                        <p className="font-semibold">{selectedRequest.roleAndPurpose.jobTitle}</p>
+                      </div>
+                    )}
+                    {selectedRequest.roleAndPurpose.mainReason && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Main Reason</Label>
+                        <p className="font-semibold">{selectedRequest.roleAndPurpose.mainReason}</p>
+                      </div>
+                    )}
+                    {selectedRequest.roleAndPurpose.useCase && (
+                      <div className="col-span-2">
+                        <Label className="text-xs text-muted-foreground">Use Case</Label>
+                        <p className="font-semibold">{selectedRequest.roleAndPurpose.useCase}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Scheduling Details */}
+              {selectedRequest.schedulingDetails && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Scheduling Details</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedRequest.schedulingDetails.preferredDate && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Preferred Date</Label>
+                        <p className="font-semibold">
+                          {new Date(selectedRequest.schedulingDetails.preferredDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                    {selectedRequest.schedulingDetails.preferredTime && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Preferred Time</Label>
+                        <p className="font-semibold">{selectedRequest.schedulingDetails.preferredTime}</p>
+                      </div>
+                    )}
+                    {selectedRequest.schedulingDetails.timezone && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Timezone</Label>
+                        <p className="font-semibold">{selectedRequest.schedulingDetails.timezone}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Message */}
+              {selectedRequest.message && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Message</Label>
+                  <div className="p-4 border rounded-lg bg-muted/30">
+                    <p className="text-sm whitespace-pre-wrap">{selectedRequest.message}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Consent */}
+              {selectedRequest.consent && (
+                <div>
+                  <Label className="text-sm font-semibold mb-3 block">Consent</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Marketing Opt-In</Label>
+                      <p className="font-semibold">
+                        {selectedRequest.consent.marketingOptIn ? "Yes" : "No"}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Terms Agreed</Label>
+                      <p className="font-semibold">
+                        {selectedRequest.consent.agreeToTerms ? "Yes" : "No"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Created Date */}
+              {selectedRequest.createdAt && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">Created</Label>
+                  <p className="font-semibold text-sm">
+                    {new Date(selectedRequest.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };
